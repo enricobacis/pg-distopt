@@ -6,7 +6,7 @@
       "performance" : { "aes" : 500 },
       "costs" : { "cpu" : 0.004, "in" : 0.0, "out" : 0.0 },
       "links" : {
-        "SS1" : { "latency" : 0.01, "throughput" : 100 }
+        "SS1" : { "throughput" : 100 }
       },
       "plain" : [
         "c_custkey", "c_name", "c_address", "c_nationkey", "c_phone",
@@ -35,7 +35,7 @@
       "performance" : { "aes" : 500 },
       "costs" : { "cpu" : 0.001, "in" : 0.0001, "out" : 0.001 },
       "links" : {
-        "CL1" : { "latency" : 0.01, "throughput" : 100 }
+        "CL1" : { "throughput" : 100 }
       },
       "plain" : [
         "c_custkey", "c_name", "c_address", "c_nationkey", "c_phone",
