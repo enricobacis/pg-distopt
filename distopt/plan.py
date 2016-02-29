@@ -27,7 +27,23 @@ class Plan:
         return cls(objectify.fromstring(xml).find('./Query/Plan'))
 
     def printtree(self, level=0):
-        if not level: print ' TREE '.center(80, '=')
-        print ' ' * (level * 4) + self['Node-Type'], self.time, self.totaltime
+        if not level: print ' TREE '.center(80, '-')
+        print '%s%s [Time: %g]' % (' '*(level*4), self['Node-Type'], self.time)
         for child in self.children:
             child.printtree(level=level + 1)
+
+class DistPlan:
+    def __init__(self, plan, server, nodecost):
+        self.plan, self.server, self.nodecost = plan, server, nodecost
+        self.children = []
+
+    @property
+    def cost(self):
+        return self.nodecost + sum(child.cost for child in self.children)
+
+    def printtree(self, level=0):
+        if level == 0: print ' DISTPLAN '.center(80, '-')
+        print '%s%s [Server: %s, Cost: %g]' % (' ' * (level*4),
+            self.plan['Node-Type'], self.server['name'], self.nodecost)
+        for child in self.children:
+            child.printtree(level=level+1)

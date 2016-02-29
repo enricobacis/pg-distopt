@@ -1,14 +1,17 @@
+from plan import DistPlan
+
 def cost(plan, config, rootserver):
     if not plan.children:     # leaf
-        visible = set(rootserver['plain'])
-        require = set(rc.text.split('.')[1] for rc in plan['Output'].getchildren())
+        plains = set(rootserver['plain'])
+        access = set(o.text.split('.')[1] for o in plan['Output'].getchildren())
+        if not access <= plains:
+            return DistPlan(plan, rootserver, float('+inf'))
 
-        if require <= visible:
-            return plan.time * rootserver['costs']['cpu']
-        else:
-            return float('+inf')
-    return plan.time * rootserver['costs']['cpu'] + sum(
-            best(subplan, config) for subplan in plan.children)
+    dist = DistPlan(plan, rootserver, plan.time * rootserver['costs']['cpu'])
+    for subplan in plan.children:
+        dist.children.append(best(subplan, config))
+    return dist
 
-def best(plan, config):
-    return min(cost(plan, config, rootserver) for rootserver in config.nodes)
+def best(plan, config, dest=None):
+    return min((cost(plan, config, server) for server in config.nodes),
+               key=lambda distplan: distplan.cost)
