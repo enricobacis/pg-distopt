@@ -64,7 +64,7 @@
       "name" : "CS1",
       "type" : "computational",
       "performance" : { "aes" : 100 },
-      "costs" : { "cpu" : 0.0001, "in" : 0.0002, "out" : 0.002 },
+      "costs" : { "cpu" : 0.0001, "in" : 0.0005, "out" : 0.005 },
       "links" : {
         "CL1" : { "latency" : 0.01,   "throughput" : 100 },
         "SS1" : { "latency" : 0.0001, "throughput" : 10000 }
