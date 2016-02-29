@@ -37,13 +37,23 @@ class DistPlan:
         self.plan, self.server, self.nodecost = plan, server, nodecost
         self.children = []
 
-    @property
-    def cost(self):
-        return self.nodecost + sum(child.cost for child in self.children)
+    def transfer_cost(self, dest=None):
+        if not dest or dest == self.server: return 0
+        return self.size() * (self.server['costs']['out'] + dest['costs']['in'])
 
-    def printtree(self, level=0):
+    def size(self):
+        return int(self.plan['Plan-Rows']) * int(self.plan['Plan-Width']) / 10e6
+
+    def cost(self, dest=None):
+        return ( self.nodecost
+               + self.transfer_cost(dest)
+               + sum(child.cost(dest=self.server)
+                     for child in self.children))
+
+    def printtree(self, level=0, dest=None):
         if level == 0: print ' DISTPLAN '.center(80, '-')
-        print '%s%s [Server: %s, Cost: %g]' % (' ' * (level*4),
-            self.plan['Node-Type'], self.server['name'], self.nodecost)
+        print '%s%s [Server: %s, Cost: %g, Size: %g MB, Transfer: %g]' % (
+            ' ' * (level*4), self.plan['Node-Type'], self.server['name'],
+            self.nodecost, self.size(), self.transfer_cost(dest))
         for child in self.children:
-            child.printtree(level=level+1)
+            child.printtree(level=level+1, dest=self.server)
