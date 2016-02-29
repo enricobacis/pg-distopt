@@ -4,7 +4,7 @@
       "name" : "CL1",
       "type" : "client",
       "performance" : { "aes" : 500 },
-      "costs" : { "cpu" : 0.004, "in" : 0.0, "out" : 0.0 },
+      "costs" : { "cpu" : 0.0006, "in" : 0.0, "out" : 0.0 },
       "links" : {},
       "plain" : [
         "c_custkey", "c_name", "c_address", "c_nationkey", "c_phone",
