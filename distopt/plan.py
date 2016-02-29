@@ -1,4 +1,5 @@
 from xml.etree import ElementTree as ET
+from utils import get_read_cols
 from lxml import objectify
 from memo import classkeymemo
 import re
@@ -38,12 +39,21 @@ class DistPlan:
 
     @classkeymemo(lambda self, dest: dest['name'] if dest else None)
     def transfer_cost(self, dest=None):
-        if not dest or dest == self.server: return 0
+        if not dest or dest == self.server: return 0.0
         through = float(self.server['links'][dest['name']]['throughput'])
-        return ((self.size() *                      # transfer time
-                (self.server['costs']['out'] + dest['costs']['in']))
-               +(self.size() / through *            # cpu during transfer
-                (self.server['costs']['cpu'] + dest['costs']['cpu'])))
+        return ( (self.size() *                      # transfer time
+                   (self.server['costs']['out'] + dest['costs']['in']))
+               + (self.size() / through *            # cpu during transfer
+                   (self.server['costs']['cpu'] + dest['costs']['cpu'])) )
+
+    @classkeymemo(lambda self, dest: dest['name'] if dest else None)
+    def encryption_cost(self, dest=None):
+        if not dest or dest == self.server: return 0.0
+        output = set(get_read_cols(self.plan))
+        encrypted = output & set(dest['encrypted'])
+        try: return ( (self.size() * float(len(encrypted)) / len(output))
+                    / dest['performance']['aes'] * self.server['costs']['cpu'] )
+        except ZeroDivisionError: return 0.0
 
     def size(self):
         return int(self.plan['Plan-Rows']) * int(self.plan['Plan-Width']) / 10e6
@@ -51,13 +61,15 @@ class DistPlan:
     def cost(self, dest=None):
         return ( self.nodecost
                + self.transfer_cost(dest)
+               + self.encryption_cost(dest)
                + sum(child.cost(dest=self.server)
                      for child in self.children))
 
     def printtree(self, level=0, dest=None):
         if level == 0: print ' DISTPLAN '.center(80, '-')
-        print '%s%s [Server: %s, Cost: %g, Size: %g MB, Transfer: %g]' % (
-            ' ' * (level*4), self.plan['Node-Type'], self.server['name'],
-            self.nodecost, self.size(), self.transfer_cost(dest))
+        print ('%s%s [Server: %s, Cost: %g, Size: %g MB, Transfer: %g, '
+                'Encryption: %g]') % (' ' * (level*4), self.plan['Node-Type'],
+                self.server['name'], self.nodecost, self.size(),
+                self.transfer_cost(dest), self.encryption_cost(dest))
         for child in self.children:
             child.printtree(level=level+1, dest=self.server)
