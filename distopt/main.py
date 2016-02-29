@@ -2,7 +2,7 @@ from analyzer import best
 from config import Config
 from plan import Plan
 
-plan   = Plan.parse('../plans/2.xml')
+plan = Plan.parse('../plans/2.xml')
 plan.printtree()
 
 for bench in xrange(5, 8):

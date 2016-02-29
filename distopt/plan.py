@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree as ET
 from lxml import objectify
 import re
 
@@ -35,11 +35,18 @@ class Plan:
 class DistPlan:
     def __init__(self, plan, server, nodecost):
         self.plan, self.server, self.nodecost = plan, server, nodecost
-        self.children = []
+        self.transfers, self.children = {}, []
 
     def transfer_cost(self, dest=None):
         if not dest or dest == self.server: return 0
-        return self.size() * (self.server['costs']['out'] + dest['costs']['in'])
+        if dest['name'] not in self.transfers:
+            through = float(self.server['links'][dest['name']]['throughput'])
+            self.transfers[dest['name']] = (
+                (self.size() *                         # transfer time
+                    (self.server['costs']['out'] + dest['costs']['in']))
+              + (self.size() / through *               # cpu during transfer
+                    (self.server['costs']['cpu'] + dest['costs']['cpu'])))
+        return self.transfers[dest['name']]
 
     def size(self):
         return int(self.plan['Plan-Rows']) * int(self.plan['Plan-Width']) / 10e6
