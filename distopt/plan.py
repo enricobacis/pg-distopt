@@ -1,5 +1,6 @@
 from xml.etree import ElementTree as ET
 from lxml import objectify
+from memo import classkeymemo
 import re
 
 class Plan:
@@ -12,9 +13,7 @@ class Plan:
         return self.plan[key]
 
     def __len__(self):
-        if self.children:
-            return 1 + sum(len(child) for child in self.children)
-        return 1
+        return 1 + sum(len(child) for child in self.children)
 
     @property
     def time(self):
@@ -35,18 +34,16 @@ class Plan:
 class DistPlan:
     def __init__(self, plan, server, nodecost):
         self.plan, self.server, self.nodecost = plan, server, nodecost
-        self.transfers, self.children = {}, []
+        self.children = []
 
+    @classkeymemo(lambda self, dest: dest['name'] if dest else None)
     def transfer_cost(self, dest=None):
         if not dest or dest == self.server: return 0
-        if dest['name'] not in self.transfers:
-            through = float(self.server['links'][dest['name']]['throughput'])
-            self.transfers[dest['name']] = (
-                (self.size() *                         # transfer time
-                    (self.server['costs']['out'] + dest['costs']['in']))
-              + (self.size() / through *               # cpu during transfer
-                    (self.server['costs']['cpu'] + dest['costs']['cpu'])))
-        return self.transfers[dest['name']]
+        through = float(self.server['links'][dest['name']]['throughput'])
+        return ((self.size() *                      # transfer time
+                (self.server['costs']['out'] + dest['costs']['in']))
+               +(self.size() / through *            # cpu during transfer
+                (self.server['costs']['cpu'] + dest['costs']['cpu'])))
 
     def size(self):
         return int(self.plan['Plan-Rows']) * int(self.plan['Plan-Width']) / 10e6
