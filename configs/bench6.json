@@ -3,7 +3,7 @@
     {
       "name" : "CL1",
       "type" : "client",
-      "performance" : { "aes" : 100 },
+      "performance" : { "aes" : 500 },
       "costs" : { "cpu" : 0.004, "in" : 0.0, "out" : 0.0 },
       "links" : {
         "SS1" : { "latency" : 0.01, "throughput" : 100 }
@@ -32,7 +32,7 @@
     {
       "name" : "SS1",
       "type" : "storage",
-      "performance" : { "aes" : 100 },
+      "performance" : { "aes" : 500 },
       "costs" : { "cpu" : 0.001, "in" : 0.0001, "out" : 0.001 },
       "links" : {
         "CL1" : { "latency" : 0.01, "throughput" : 100 }
