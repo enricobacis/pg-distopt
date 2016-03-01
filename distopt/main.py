@@ -1,3 +1,6 @@
+#!/usr/bin/env python2
+
+from argparse import ArgumentParser
 from analyzer import best
 from config import Config
 from plan import Plan
@@ -26,11 +29,19 @@ def all_plans(plans, configs):
         results[planfile] = all_configs(plan, configs)
     return results
 
-plan_pattern = '../plans/*.xml'
-config_pattern = '../configs/*.json'
+if __name__ == '__main__':
+    parser = ArgumentParser(description='Optimize distributed Postgres queries',
+        epilog="globs can be used like '../plans/*.xml' (single quotes!)")
+    parser.add_argument('PLANS', help='query plan (or multiple using glob')
+    parser.add_argument('CONFIGS', help='configuration (or multiple using glob')
+    parser.add_argument('--out', default='results.out')
+    args = parser.parse_args()
 
-plans = [(file, Plan.parse(file)) for file in glob(plan_pattern)]
-configs = [(file, Config.parse(file)) for file in glob(config_pattern)]
+    #PLANS = '../plans/*.xml'
+    #CONFIGS = '../configs/*.json'
 
-with open('results.out', 'w') as outfile:
-    dump(all_plans(plans, configs), outfile)
+    plans = [(file, Plan.parse(file)) for file in glob(args.PLANS)]
+    configs = [(file, Config.parse(file)) for file in glob(args.CONFIGS)]
+
+    with open(args.out, 'w') as outfile:
+        dump(all_plans(plans, configs), outfile)
