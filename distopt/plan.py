@@ -9,6 +9,7 @@ class Plan:
         self.plan = plan
         self.children = map(Plan, self.plan.findall('./Plans/Plan'))
         self.totaltime = self['Actual-Total-Time']
+        self.best = None
 
     def __getitem__(self, key):
         return self.plan[key]

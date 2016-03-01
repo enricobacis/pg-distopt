@@ -14,5 +14,7 @@ def cost(plan, config, rootserver):
     return dist
 
 def best(plan, config):
-    return min((cost(plan, config, server) for server in config.nodes),
-               key=lambda distplan: distplan.cost())
+    if plan.best is None:
+        plan.best = min((cost(plan, config, server) for server in config.nodes),
+                        key=lambda distplan: distplan.cost())
+    return plan.best
