@@ -7,26 +7,27 @@ from plan import Plan
 from glob import glob
 from json import dump
 
-def single(plan, config):
+def single(planfile, configfile):
+    plan, config = Plan.parse(planfile), Config.parse(configfile)
     distplan = best(plan, config)
     cost = distplan.cost(dest=config['CL1'])
     print 'Best cost:', cost
     distplan.printtree(dest=config['CL1'])
     return cost
 
-def all_configs(plan, configs):
+def all_configs(planfile, configs):
     results = {}
-    for configfile, config in configs:
+    for configfile in configs:
         print '\n' + (' BENCH %s ' % configfile).center(80, '-')
-        results[configfile] = single(plan, config)
+        results[configfile] = single(planfile, configfile)
     return results
 
 def all_plans(plans, configs):
     results = {}
-    for planfile, plan in plans:
+    for planfile in plans:
         print '\n' + (' PLAN %s ' % planfile).center(80, '=')
-        plan.printtree()
-        results[planfile] = all_configs(plan, configs)
+        Plan.parse(planfile).printtree()
+        results[planfile] = all_configs(planfile, configs)
     return results
 
 if __name__ == '__main__':
@@ -40,8 +41,9 @@ if __name__ == '__main__':
     #PLANS = '../plans/*.xml'
     #CONFIGS = '../configs/*.json'
 
-    plans = [(file, Plan.parse(file)) for file in glob(args.PLANS)]
-    configs = [(file, Config.parse(file)) for file in glob(args.CONFIGS)]
+    plans = glob(args.PLANS)
+    configs = glob(args.CONFIGS)
+    print '%d plans and %d configs provided' % (len(plans), len(configs))
 
     with open(args.out, 'w') as outfile:
         dump(all_plans(plans, configs), outfile)
