@@ -27,6 +27,11 @@ class Plan:
             xml = re.sub(' xmlns="[^"]+"', '', fp.read(), count=1)
         return cls(objectify.fromstring(xml).find('./Query/Plan'))
 
+    def clean(self):
+        self.best = None
+        for child in self.children:
+            child.clean()
+
     def printtree(self, level=0):
         if not level: print ' TREE '.center(80, '-')
         print '%s%s [Time: %g]' % (' '*(level*4), self['Node-Type'], self.time)
