@@ -44,6 +44,8 @@ if __name__ == '__main__':
     plans = glob(args.PLANS)
     configs = glob(args.CONFIGS)
     print '%d plans and %d configs provided' % (len(plans), len(configs))
-
-    with open(args.out, 'w') as outfile:
-        dump(all_plans(plans, configs), outfile)
+    if len(plans) and len(configs):
+        with open(args.out, 'w') as outfile:
+            dump(all_plans(plans, configs), outfile)
+    else:
+        print 'please provide at least one plan and one configuration'
