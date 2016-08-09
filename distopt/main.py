@@ -33,8 +33,8 @@ def all_plans(plans, configs):
 if __name__ == '__main__':
     parser = ArgumentParser(description='Optimize distributed Postgres queries',
         epilog="globs can be used like '../plans/*.xml' (single quotes!)")
-    parser.add_argument('PLANS', help='query plan (or multiple using glob')
-    parser.add_argument('CONFIGS', help='configuration (or multiple using glob')
+    parser.add_argument('PLANS', help='query plan (or multiple with glob)')
+    parser.add_argument('CONFIGS', help='configuration (or multiple with glob)')
     parser.add_argument('--out', default='results.out')
     args = parser.parse_args()
 
