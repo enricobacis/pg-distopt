@@ -41,8 +41,8 @@ if __name__ == '__main__':
     #PLANS = '../plans/*.xml'
     #CONFIGS = '../configs/*.json'
 
-    plans = glob(args.PLANS)
-    configs = glob(args.CONFIGS)
+    plans = list(sorted(glob(args.PLANS)))
+    configs = list(sorted(glob(args.CONFIGS)))
     print('%d plans and %d configs provided' % (len(plans), len(configs)))
     if len(plans) and len(configs):
         with open(args.out, 'w') as outfile:
