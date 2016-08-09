@@ -5,7 +5,11 @@ from memo import classkeymemo
 import re
 
 class Plan:
+
+    __last_id = 0
+
     def __init__(self, plan):
+        self.id = Plan.__last_id = Plan.__last_id + 1
         self.plan = plan
         self.children = map(Plan, self.plan.findall('./Plans/Plan'))
         self.totaltime = self['Actual-Total-Time']
@@ -34,7 +38,8 @@ class Plan:
 
     def printtree(self, level=0):
         if not level: print ' TREE '.center(80, '-')
-        print '%s%s [Time: %g]' % (' '*(level*4), self['Node-Type'], self.time)
+        print '%s%d: %s [Time: %g]' % (' '*(level*4), self.id,
+                self['Node-Type'], self.time)
         for child in self.children:
             child.printtree(level=level + 1)
 
