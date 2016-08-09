@@ -11,21 +11,21 @@ def single(planfile, configfile):
     plan, config = Plan.parse(planfile), Config.parse(configfile)
     distplan = best(plan, config)
     cost = distplan.cost(dest=config['CL1'])
-    print 'Best cost:', cost
+    print('Best cost:', cost)
     distplan.printtree(dest=config['CL1'])
     return cost
 
 def all_configs(planfile, configs):
     results = {}
     for configfile in configs:
-        print '\n' + (' BENCH %s ' % configfile).center(80, '-')
+        print('\n' + (' BENCH %s ' % configfile).center(80, '-'))
         results[configfile] = single(planfile, configfile)
     return results
 
 def all_plans(plans, configs):
     results = {}
     for planfile in plans:
-        print '\n' + (' PLAN %s ' % planfile).center(80, '=')
+        print('\n' + (' PLAN %s ' % planfile).center(80, '='))
         Plan.parse(planfile).printtree()
         results[planfile] = all_configs(planfile, configs)
     return results
@@ -43,9 +43,9 @@ if __name__ == '__main__':
 
     plans = glob(args.PLANS)
     configs = glob(args.CONFIGS)
-    print '%d plans and %d configs provided' % (len(plans), len(configs))
+    print('%d plans and %d configs provided' % (len(plans), len(configs)))
     if len(plans) and len(configs):
         with open(args.out, 'w') as outfile:
             dump(all_plans(plans, configs), outfile)
     else:
-        print 'please provide at least one plan and one configuration'
+        print('please provide at least one plan and one configuration')

@@ -8,9 +8,9 @@ from json import load
 
 def generate(outfile):
     results = []
-    for planfile, data in sorted(load(outfile).items(), key=itemgetter(0)):
+    for planfile, data in sorted(list(load(outfile).items()), key=itemgetter(0)):
         results.append([max(0, data[k]) for k in sorted(data.keys())])
-    bench = zip(*results)
+    bench = list(zip(*results))
 
     N = min(len(b) for b in bench)     # number of plans in benchmarks
     plt.xlim(.5, N + 1.5)              # set the graph x limits

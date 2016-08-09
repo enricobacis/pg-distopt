@@ -11,7 +11,7 @@ class Plan:
     def __init__(self, plan):
         self.id = Plan.__last_id = Plan.__last_id + 1
         self.plan = plan
-        self.children = map(Plan, self.plan.findall('./Plans/Plan'))
+        self.children = list(map(Plan, self.plan.findall('./Plans/Plan')))
         self.totaltime = self['Actual-Total-Time']
         self.best = None
 
@@ -37,9 +37,9 @@ class Plan:
             child.clean()
 
     def printtree(self, level=0):
-        if not level: print ' TREE '.center(80, '-')
-        print '%s%d: %s [Time: %g]' % (' '*(level*4), self.id,
-                self['Node-Type'], self.time)
+        if not level: print(' TREE '.center(80, '-'))
+        print('%s%d: %s [Time: %g]' % (' '*(level*4), self.id,
+                self['Node-Type'], self.time))
         for child in self.children:
             child.printtree(level=level + 1)
 
@@ -77,10 +77,10 @@ class DistPlan:
                      for child in self.children))
 
     def printtree(self, level=0, dest=None):
-        if level == 0: print ' DISTPLAN '.center(80, '-')
-        print ('%s%s [Server: %s, Cost: %g, Size: %g MB, Transfer: %g, '
+        if level == 0: print(' DISTPLAN '.center(80, '-'))
+        print(('%s%s [Server: %s, Cost: %g, Size: %g MB, Transfer: %g, '
                 'Encryption: %g]') % (' ' * (level*4), self.plan['Node-Type'],
                 self.server['name'], self.nodecost, self.size(),
-                self.transfer_cost(dest), self.encryption_cost(dest))
+                self.transfer_cost(dest), self.encryption_cost(dest)))
         for child in self.children:
             child.printtree(level=level+1, dest=self.server)
